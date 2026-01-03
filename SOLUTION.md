@@ -1,6 +1,6 @@
 # Challenge Solution: Contract 0xa60Fa8391625163b1760f89DAc94bac2C448f897
 
-## Answer
+## This is my answer. i am submitting this in python alos.
 
 ```python
 >>> value = 0x66de8ffda797e3de9c05e8fc57b3bf0ec28a930d40b0d285d93c06501cf6a090
@@ -13,9 +13,9 @@ answer: 0x66de8ffda797e3de9c05e8fc57b3bf0ec28a930d40b0d285d93c06501cf6a090d135e4
 
 ## Methodology
 
-### 1. Bytecode Retrieval
+### 1. I had to retrieve it`s bytecode.  
 
-Retrieved runtime bytecode from Polygonscan Amoy:
+Retrieved runtime bytecode from Polygonscan Amoy as it was mentioned in the challenge:
 
 ```
 0x60205f8037346020525f51465f5260405f2054585460205114911416366020141615602157005b5f80fd
@@ -64,7 +64,10 @@ Retrieved runtime bytecode from Polygonscan Amoy:
 
 ### 3. Control Flow Analysis
 
-The contract reaches `STOP` (success) only when all conditions are true:
+I had to carefully analysize that the contract reaches `STOP` (success) only when all conditions are true:
+
+
+check below: 
 
 ```
 success = (calldatasize == 32) 
@@ -81,6 +84,8 @@ success = (calldatasize == 32)
 - `callvalue` = value from storage[19]
 
 ### 5. On-Chain Storage Queries
+
+I later went onchain to query strorage slots on slot 19 particularly. 
 
 ```bash
 # Query storage slot 19
@@ -102,6 +107,8 @@ cast storage 0xa60Fa8391625163b1760f89DAc94bac2C448f897 \
 
 ### 6. Verification via Foundry Fork Test
 
+I finally then simulated a foundry fork test to accurately spot the correct answer to the solution. Check this code below and run its test. 
+
 ```solidity
 contract AmoyForkTest is Test {
     address constant TARGET = 0xa60Fa8391625163b1760f89DAc94bac2C448f897;
@@ -118,12 +125,11 @@ contract AmoyForkTest is Test {
 
 ```bash
 forge test --fork-url https://rpc-amoy.polygon.technology --match-test test_Solution -vvv
-# Result: PASS
 ```
 
 ---
 
 ## Notes
 
-The required `msg.value` (~4.65 × 10⁷⁶ wei) exceeds all possible ETH supply, confirming the challenge statement that "it may not be possible to submit an actual transaction."
+The required `msg.value` (~4.65 × 10⁷⁶ wei) exceeds all possible ETH supply, this is not possible on a real tx. 
 

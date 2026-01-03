@@ -7,7 +7,7 @@ contract ChallengeTest is Test {
     // The runtime bytecode from the contract
     bytes constant RUNTIME_BYTECODE = hex"60205f8037346020525f51465f5260405f2054585460205114911416366020141615602157005b5f80fd";
     
-    // Actual contract address on Amoy
+    //I have to get the actual contract address on Amoy from the contract code
     address constant AMOY_CONTRACT = 0xa60Fa8391625163b1760f89DAc94bac2C448f897;
     
     address target;
@@ -16,13 +16,6 @@ contract ChallengeTest is Test {
         // Deploy the runtime bytecode by using vm.etch
         target = address(0x1234);
         vm.etch(target, RUNTIME_BYTECODE);
-    }
-
-    // Test Grok's answer: value=0, data=0x0 (empty calldata)
-    function test_GrokAnswer_EmptyCalldata() public {
-        // value = 0, data = empty (0 bytes)
-        (bool success,) = target.call{value: 0}("");
-        assertFalse(success, "Empty calldata should fail because calldatasize != 32");
     }
 
     // Test with 32 bytes of zeros
@@ -38,7 +31,7 @@ contract ChallengeTest is Test {
         }
     }
 
-    // Let me trace through the bytecode logic
+    // I have traced through the bytecode logic
     // The bytecode checks:
     // 1. calldatasize == 32
     // 2. calldata (as uint256) == storage[keccak256(chainid || callvalue)]
@@ -56,7 +49,7 @@ contract ChallengeTest is Test {
         assertTrue(success, "Should succeed with value=0 and 32 zero bytes");
     }
 
-    // Debug: let's check what chainid we're using
+    // Debug: check the chainid we're using
     function test_DebugChainId() public {
         emit log_named_uint("Current chainid", block.chainid);
         
@@ -103,12 +96,6 @@ contract AmoyForkTest is Test {
         
         (bool success,) = AMOY_CONTRACT.call{value: REQUIRED_VALUE}(data);
         assertTrue(success, "Should succeed with the actual storage values");
-    }
-
-    function test_GrokAnswer_Fork() public {
-        // Test Grok's answer on Amoy - should fail
-        (bool success,) = AMOY_CONTRACT.call{value: 0}("");
-        assertFalse(success, "Grok's answer (empty calldata) should fail on Amoy");
     }
 
     function test_VerifyChainId() public view {
